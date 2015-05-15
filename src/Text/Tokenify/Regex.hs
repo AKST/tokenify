@@ -1,7 +1,10 @@
-module Text.Tokenify.Regex where
+
+-- | A DSL for representing qualifies as a matched token
+
+module Text.Tokenify.Regex (Regex(..)) where
 
 
-{-| An Abstract data type for representing a regex -}
+-- | An Abstract data type for representing a regex
 
 
 data Regex s

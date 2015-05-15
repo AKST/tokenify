@@ -1,10 +1,16 @@
 {-# LANGUAGE ViewPatterns #-}
 
+-- | 'Text.Tokenify' is a module used for generating a
+-- tokenizer from a regex based grammar
+
 module Text.Tokenify (
 
   tokenize,
 
   matchHead,
+
+  module DSL,
+  module Types
 
 ) where
 
@@ -13,6 +19,8 @@ import Prelude hiding (head)
 import qualified Text.Tokenify.Response as Response
 import qualified Text.Tokenify.CharSeq as CSeq
 import qualified Text.Tokenify.Regex as Regex
+import qualified Text.Tokenify.Types as Types
+import qualified Text.Tokenify.DSL as DSL
 
 import Text.Tokenify.Response (Response)
 import Text.Tokenify.CharSeq (CharSeq)
@@ -30,6 +38,7 @@ import Control.Applicative ((<|>))
 {-- main functionality --}
 
 
+-- | 'tokenize' will transform a 'CharSeq' into a sequence of tokens
 tokenize :: (CharSeq s) => Tokenizer s a -> s -> Either String (Seq a)
 tokenize tokenizers input = impl tokenizers Seq.empty 0 input where
 
@@ -73,6 +82,12 @@ tokenize tokenizers input = impl tokenizers Seq.empty 0 input where
 
 
 
+-- | Attmpts to match the front of a 'CharSeq' with a 'Regex',
+-- if succeful, it returns a tuple containing
+--
+--  * The matched 'CharSeq'
+--  * The remaining 'CharSeq'
+--  * The amount of characters consumed
 matchHead :: (CharSeq s) => Regex s -> s -> Maybe (s, s, Int)
 matchHead regex input = case regex of
   -- match nothing
