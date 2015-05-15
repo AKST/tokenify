@@ -1,6 +1,7 @@
 name:          tokenify
 version:       0.1.0.0
 license:       MIT
+category:      parser
 license-file:  LICENSE
 author:        Angus Thomsen
 maintainer:    aksthomsen@gmail.com
@@ -8,6 +9,7 @@ homepage:      https://github.com/AKST/tokenify
 synopsis:      A regex based LR tokenizer
 build-type:    Simple
 cabal-version: >=1.10
+description:   A LR tokenizier used to split text into tokens
 
 library
   build-depends:    base >=4.7 && <4.8, text==1.2.*, containers==0.5.*
