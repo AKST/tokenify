@@ -1,6 +1,6 @@
 # Tokenify, _a LR tokenizer_
 
-This is a small tokenizer library, here's a smal snippet of usage
+This is a small lexer library, here's a smal snippet of usage
 
 ```haskell
 module MyModule where

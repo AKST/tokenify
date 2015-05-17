@@ -10,7 +10,8 @@ module Text.Tokenify (
   matchHead,
 
   module DSL,
-  module Types
+  module Types,
+  module CSeq
 
 ) where
 
