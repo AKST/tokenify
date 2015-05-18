@@ -3,8 +3,8 @@ module Text.Tokenify.Response (Response(..)) where
 
 
 
--- | The purpose of a response is to provide behaviour to
--- interprete the regular expression
+-- | A response, as the name suggests is a response which is triggered when
+-- a regular expression is matched.
 data Response s a
   = Ignore
   | Display ((Int, Int) -> a)

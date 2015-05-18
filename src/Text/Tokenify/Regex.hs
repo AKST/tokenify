@@ -4,12 +4,15 @@
 
 module Text.Tokenify.Regex (
 
+  -- * Types
   Regex(),
 
+  -- * Constructors
   string, char, range, alt, any,
   repeat, repeat1, append, option,
   concat,
 
+  -- * Module Utitlity
   matchHead
 
 ) where

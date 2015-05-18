@@ -7,11 +7,14 @@
 
 module Text.Tokenify.DSL (
 
+  -- * Token Constructors
   fails, ignore, insert, evaluate,
 
+  -- * Regex Constructors
   Regex.string, Regex.char, Regex.range, Regex.alt, Regex.any,
   Regex.repeat, Regex.repeat1, Regex.append, Regex.option,
   Regex.concat
+
 ) where
 
 import Prelude hiding (concat, any)
@@ -21,8 +24,6 @@ import qualified Text.Tokenify.Regex as Regex
 import Text.Tokenify.Regex (Regex)
 import Text.Tokenify.Types
 
-
--- * Token Constructors
 
 -- | Creates a response which will fail on a regex
 fails :: Regex s -> Token s a

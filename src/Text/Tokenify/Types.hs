@@ -1,6 +1,19 @@
 
 -- | Common types used by Text.Tokenify
-module Text.Tokenify.Types where
+module Text.Tokenify.Types (
+
+  -- * Core Data Types
+
+  Text.Tokenify.Regex.Regex(),
+  Text.Tokenify.Response.Response(),
+
+  -- * Common Types
+
+  Tokenizer(..),
+  Token(..),
+  Pos(..)
+
+) where
 
 import Text.Tokenify.Response (Response)
 import Text.Tokenify.Regex (Regex)
