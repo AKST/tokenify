@@ -1,5 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-
 -- | 'Text.Tokenify' is a module used for generating a
 -- tokenizer from a regex based grammar
 
@@ -7,11 +5,11 @@ module Text.Tokenify (
 
   tokenize,
 
-  matchHead,
+  Regex.matchHead,
 
-  module DSL,
-  module Types,
-  module CSeq
+  module Text.Tokenify.DSL,
+  module Text.Tokenify.Types,
+  module Text.Tokenify.CharSeq
 
 ) where
 
@@ -21,19 +19,15 @@ import qualified Text.Tokenify.Response as Response
 import qualified Text.Tokenify.CharSeq as CSeq
 import qualified Text.Tokenify.Regex as Regex
 import qualified Text.Tokenify.Types as Types
-import qualified Text.Tokenify.DSL as DSL
 
+import Text.Tokenify.DSL ()
 import Text.Tokenify.Response (Response)
 import Text.Tokenify.CharSeq (CharSeq)
 import Text.Tokenify.Regex (Regex)
 import Text.Tokenify.Types
 
-import qualified Data.Monoid as Monoid
 import qualified Data.Sequence as Seq
 import Data.Sequence ((|>), Seq)
-import Data.Monoid ((<>))
-
-import Control.Applicative ((<|>))
 
 
 {-- main functionality --}
@@ -66,7 +60,7 @@ tokenize tokenizers input = impl tokenizers Seq.empty 0 input where
 
   -- normal loop
   impl ((rx, rs):ts) acc position input
-    = case matchHead rx input of
+    = case Regex.matchHead rx input of
       Nothing -> impl ts acc position input
       Just (matched, rest, moved) ->
 
@@ -82,78 +76,5 @@ tokenize tokenizers input = impl tokenizers Seq.empty 0 input where
             impl tokenizers (acc |> p matched coordants) position' rest
 
 
-
--- | Attmpts to match the front of a 'CharSeq' with a 'Regex',
--- if succeful, it returns a tuple containing
---
---  * The matched 'CharSeq'
---  * The remaining 'CharSeq'
---  * The amount of characters consumed
-matchHead :: (CharSeq s) => Regex s -> s -> Maybe (s, s, Int)
-matchHead regex input = case regex of
-  -- match nothing
-  Regex.NoPass -> Nothing
-
-  -- match the char 'c'
-  Regex.Char c -> CSeq.head input >>=
-    \head -> if head == c
-      then return (CSeq.singleton head, CSeq.tail input, 1)
-      else Nothing
-
-  -- match the string 's'
-  Regex.String s -> prefixTail s input >>=
-    \(diff, dSize) -> return (s, diff, dSize)
-
-  -- either 'l' or 'r'
-  Regex.Alt l r ->
-    matchHead l input <|> matchHead r input
-
-  -- matches char between 's' & 'e'
-  Regex.Range s e -> do
-    head <- CSeq.head input
-    if head >= s && e >= head
-      then return (CSeq.singleton head, CSeq.tail input, 1)
-      else Nothing
-
-  -- chain 'l' & 'r'
-  Regex.Append l r -> do
-    (a, cont, ai) <- matchHead l input
-    (b, cont, bi) <- matchHead r cont
-    return (a <> b, cont, ai + bi)
-
-  -- optionally matches
-  Regex.Option o -> case matchHead o input of
-    Nothing -> return (Monoid.mempty, input, 0)
-    anythingElse -> anythingElse
-
-  -- repeat 0 or more times
-  Regex.Repeat r -> impl Monoid.mempty input 0 where
-    impl acc cont@(matchHead r -> Nothing) i = Just (acc, cont, i)
-    impl a (matchHead r -> Just (b, cont, ib)) ia =
-      impl (a <> b) cont (ia + ib)
-
-  -- repeat 1 or more times
-  Regex.Repeat1 r -> do
-    (a, cont, ai) <- matchHead r input
-    (b, cont, bi) <- matchHead (Regex.Repeat r) input
-    return (a <> b, cont, ai + bi)
-
-
---
--- dumb helpers
---
-
-
-prefixTail :: (CharSeq s) => s -> s -> Maybe (s, Int)
-prefixTail prefix input = trySplit prefix input 0 where
-  trySplit pre dec index
-    | CSeq.null pre = Just (dec, index)
-
-    -- if (dec.length != 0 && dec.head == pre.head)
-    --   trySplit(pre.tail, dec.tail, ++index);
-    | not (CSeq.null dec) && (CSeq.head dec == CSeq.head pre)
-       = trySplit (CSeq.tail pre) (CSeq.tail dec) (index + 1)
-
-    | otherwise = Nothing
 
 
